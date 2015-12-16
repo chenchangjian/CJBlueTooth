@@ -234,13 +234,9 @@ static CJBlueTooth *shareManager = nil;
                 if (self.str)
                 {
                     NSString *str = self.str;
-                    NSLog(@"%@--------", str);
-                    
                     NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
                     
-                    
                     [self ccj_peripheral:peripheral didWriteData:data forCharacteristic:chara];
-                    
                     
                 }
                 
