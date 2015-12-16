@@ -1,21 +1,16 @@
 //
-//  CCJBLECenterManager.h
+//  CJBlueTooth.h
 //  CJBlueToothDemo
 //
-//  Created by ccj on 15/12/11.
+//  Created by ccj on 15/12/15.
 //  Copyright © 2015年 ccj. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@protocol CCJBLEDelegate <NSObject>
-@optional
-//- (void)sendAdvertisementArray:(m *)advertisementData;
-- (void)sendAdvertisementArry:(NSArray *) array;
-@end
+@interface CJBlueTooth : NSObject
 
-@interface CCJBLECenterManager : NSObject
 /** 电量 */
 @property (nonatomic, assign) NSInteger Bat;
 /** 功率 */
@@ -35,17 +30,17 @@
 /** 读取RSSI的值 */
 @property (nonatomic, assign) NSInteger RSSI;
 
-/** 代理对象 */
-@property (nonatomic, weak) id<CCJBLEDelegate> delegate;
-
 /** 单例 */
 + (instancetype)defaultBleManager;
 
-/** 设置连接 */ 
+/** 设置连接 */
 - (void)setConnectWithPeripheralName:(NSString *)PeripheralName;
 
 /** 搜索设备*/
 - (void)searchPeripheralWithName:(NSString *)PeripheralName;
+
+/** 搜索加密设备*/
+- (void)searchPeripheralWithName:(NSString *)PeripheralName UUIDService: (NSString *)UUIDService UUIDCharacteristic:(NSString *)UUIDCharacteristic andEncryptString:(NSString *)str;
 
 /** 断开设备*/
 - (void)disconnectPeripheral;

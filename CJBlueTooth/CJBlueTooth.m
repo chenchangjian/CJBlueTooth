@@ -1,14 +1,13 @@
 //
+//  CJBlueTooth.m
 //  CJBlueToothDemo
 //
-//  Created by ccj on 15/12/11.
+//  Created by ccj on 15/12/15.
 //  Copyright © 2015年 ccj. All rights reserved.
 //
 
-#import "CCJBLECenterManager.h"
+#import "CJBlueTooth.h"
 #import <sqlite3.h>
-
-
 #import "FactoryManager.h"
 #import "SVProgressHUD.h"
 
@@ -26,7 +25,7 @@
 #define DESCRIPTORS     @"2902" //外设特征的描述
 
 
-@interface CCJBLECenterManager () <CBCentralManagerDelegate, CBPeripheralDelegate>
+@interface CJBlueTooth () <CBCentralManagerDelegate, CBPeripheralDelegate>
 
 /** 中心管理者 */
 @property (nonatomic, strong) CBCentralManager *cMgr;
@@ -37,15 +36,27 @@
 @property (nonatomic, strong) NSMutableArray *array;
 
 @property (nonatomic, copy) NSString *PeripheralName;
+
+@property (nonatomic, assign) BOOL isOpen;
+
+@property (nonatomic, assign) BOOL isConnect;
+
+@property (nonatomic, copy) NSString *str;
+
+@property (nonatomic, copy) NSString *UUIDService;
+
+@property (nonatomic, copy) NSString *UUIDCharacteristic;
 @end
 
 
-static CCJBLECenterManager *shareManager = nil;
+static CJBlueTooth *shareManager = nil;
 
-@implementation CCJBLECenterManager
+
+
+@implementation CJBlueTooth
 
 //单例
-+(instancetype)defaultBleManager{
++ (instancetype)defaultBleManager{
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if (shareManager == nil) {
@@ -54,7 +65,7 @@ static CCJBLECenterManager *shareManager = nil;
     });
     return shareManager;
 }
-+(instancetype)allocWithZone:(struct _NSZone *)zone{
++ (instancetype)allocWithZone:(struct _NSZone *)zone{
     @synchronized (self){
         if (shareManager == nil) {
             shareManager = [super allocWithZone:zone];
@@ -62,7 +73,7 @@ static CCJBLECenterManager *shareManager = nil;
     }
     return shareManager;
 }
--(instancetype)init{
+- (instancetype)init{
     self = [super init];
     if (self) {
         //初始化管理中心和提取数据
@@ -77,12 +88,12 @@ static CCJBLECenterManager *shareManager = nil;
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
     switch (central.state) {
-        
+            
         case CBCentralManagerStatePoweredOn:
         {
             NSLog(@"设备蓝牙已开启");
             
-            
+            self.isOpen = YES;
             [self.cMgr scanForPeripheralsWithServices:nil // 通过某些服务筛选外设
                                               options:nil]; // dict,条
             
@@ -91,9 +102,10 @@ static CCJBLECenterManager *shareManager = nil;
             
         default:
         {
-
-            [UIAlertController alertControllerWithTitle:@"提示" message:@"蓝牙未连接,请打开蓝牙!" preferredStyle:UIAlertControllerStyleAlert];
+            
+//            [UIAlertController alertControllerWithTitle:@"提示" message:@"蓝牙未连接,请打开蓝牙!" preferredStyle:UIAlertControllerStyleAlert];
             NSLog(@"设备蓝牙未正常开启,请开启蓝牙后重试!");
+            self.isOpen = NO;
         }
             break;
     }
@@ -106,22 +118,15 @@ static CCJBLECenterManager *shareManager = nil;
      advertisementData:(NSDictionary *)advertisementData // 外设携带的数据
                   RSSI:(NSNumber *)RSSI // 外设发出的蓝牙信号强度
 {
-   
+    
     
     [self.array addObject:advertisementData];
-    if ([self.delegate respondsToSelector:@selector(sendAdvertisementArry:)])
-    {
-       
-        [self.delegate sendAdvertisementArry:self.array];
-    }
-    
-   
-
+        
     [self.PerNames addObject:advertisementData[@"kCBAdvDataLocalName"]];
     
     if ([peripheral.name isEqualToString:self.PeripheralName])
     {
-    
+        self.isConnect = YES;
         self.PerName = peripheral.name;
         
         // 标记我们的外设,让他的生命周期 = vc
@@ -129,6 +134,7 @@ static CCJBLECenterManager *shareManager = nil;
         // 发现完之后就是进行连接
         [self.cMgr connectPeripheral:self.peripheral options:nil];
     } else {
+        self.isConnect = NO;
         [SVProgressHUD showErrorWithStatus:@"没有此设备,请检查后重连!"];
     }
     
@@ -140,7 +146,7 @@ static CCJBLECenterManager *shareManager = nil;
   didConnectPeripheral:(CBPeripheral *)peripheral // 外设
 {
     [self ccj_dismissConentedWithPeripheral:peripheral IsCancle:false];
-   
+    
     
     self.peripheral.delegate = self;
     
@@ -153,13 +159,13 @@ static CCJBLECenterManager *shareManager = nil;
 // 外设连接失败
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
-     NSLog(@"设备连接失败!");
+    NSLog(@"设备连接失败!");
 }
 
 // 丢失连接
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
-     NSLog(@"设备已断开!");
+    NSLog(@"设备已断开!");
 }
 
 // 发现外设的服务后调用的方法
@@ -190,38 +196,61 @@ static CCJBLECenterManager *shareManager = nil;
         // 外设读取特征的值
         //        [peripheral readValueForCharacteristic:chara];
         // 电量特征和服务
-        if([chara.UUID isEqual:[CBUUID UUIDWithString:BatChara]] && [service.UUID isEqual:[CBUUID UUIDWithString:BatService]])
-        {
-            
         
-            [peripheral readValueForCharacteristic:chara];
-            
-            // 在这里发起,记下一个时间
-            NSDate *timeNow = [NSDate date];
-            
-            NSTimeInterval time1 = [timeNow timeIntervalSince1970];
-            
-            self.timeBegain = time1;
-            //        NSLog(@"time1 = %f",self.timeBegain);
-            
-        } else if ([chara.UUID isEqual:[CBUUID UUIDWithString:PowerCharacter]] && [service.UUID isEqual:[CBUUID UUIDWithString:PowerService]])
+        if (chara != nil)
         {
-            [peripheral readValueForCharacteristic:chara];
+            NSString *IDService = self.UUIDService;
+            if (IDService == nil)
+            {
+                IDService = encryptService;
+            }
+            NSString *IDCharacteristic = self.UUIDCharacteristic;
+            if (IDCharacteristic == nil)
+            {
+                IDCharacteristic = encptCharacter;
+            }
             
-        } else if ([chara.UUID isEqual:[CBUUID UUIDWithString:encptCharacter]] && [service.UUID isEqual:[CBUUID UUIDWithString:encryptService]]) // 如果是加密通道
-        {
+            if([chara.UUID isEqual:[CBUUID UUIDWithString:BatChara]] && [service.UUID isEqual:[CBUUID UUIDWithString:BatService]])
+            {
+                
+                
+                [peripheral readValueForCharacteristic:chara];
+                
+                // 在这里发起,记下一个时间
+                NSDate *timeNow = [NSDate date];
+                
+                NSTimeInterval time1 = [timeNow timeIntervalSince1970];
+                
+                self.timeBegain = time1;
+                //        NSLog(@"time1 = %f",self.timeBegain);
+                
+            } else if ([chara.UUID isEqual:[CBUUID UUIDWithString:PowerCharacter]] && [service.UUID isEqual:[CBUUID UUIDWithString:PowerService]])
+            {
+                [peripheral readValueForCharacteristic:chara];
+                
+            } else if ([chara.UUID isEqual:[CBUUID UUIDWithString:IDCharacteristic]] && [service.UUID isEqual:[CBUUID UUIDWithString:IDService]]) // 如果是加密通道
+            {
+                
+                if (self.str)
+                {
+                    NSString *str = self.str;
+                    NSLog(@"%@--------", str);
+                    
+                    NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+                    
+                    
+                    [self ccj_peripheral:peripheral didWriteData:data forCharacteristic:chara];
+                    
+                    
+                }
+                
+            }else if ([chara.UUID isEqual:[CBUUID UUIDWithString:AlertChara]] && [service.UUID isEqual:[CBUUID UUIDWithString:AlertService]])
+            {
+                self.AlertChater = chara;
+            }
             
-            NSString *str = @"Cocas Anti-lost";
-           
-            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+
             
-           
-            [self ccj_peripheral:peripheral didWriteData:data forCharacteristic:chara];
-            
-            
-        }else if ([chara.UUID isEqual:[CBUUID UUIDWithString:AlertChara]] && [service.UUID isEqual:[CBUUID UUIDWithString:AlertService]])
-        {
-            self.AlertChater = chara;
         }
         
         
@@ -237,7 +266,7 @@ static CCJBLECenterManager *shareManager = nil;
     
     // 写入这个方法后会不停的读取特征
     [peripheral readValueForCharacteristic:characteristic];
-   
+    
     if (error) {
         
         return;
@@ -256,7 +285,7 @@ static CCJBLECenterManager *shareManager = nil;
     {
         
         NSString *value = [[NSString alloc] initWithFormat:@"%@",[FactoryManager hexadecimalString:characteristic.value]];
-                    // 蓝牙设备的电量
+        // 蓝牙设备的电量
         NSInteger num = strtoul([value UTF8String], 0, 16);
         
         self.Power = num;
@@ -278,7 +307,6 @@ static CCJBLECenterManager *shareManager = nil;
 //接收到通知
 -(void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     
-    //    NSLog(@"+++++++++接收到通知");
     if (error) {
         NSLog(@"%@", [error localizedDescription]);
         return;
@@ -286,8 +314,6 @@ static CCJBLECenterManager *shareManager = nil;
     if (![characteristic.UUID isEqual:[CBUUID UUIDWithString:NotCharaOrDes]]) {
         return;
     }
-    //
-    //    NSLog(@"---------------");
     
     [peripheral readValueForCharacteristic:characteristic];//接受通知后读取
     [peripheral discoverDescriptorsForCharacteristic:characteristic];
@@ -364,30 +390,61 @@ static CCJBLECenterManager *shareManager = nil;
 
 - (void)searchPeripheralWithName:(NSString *)PeripheralName
 {
-    [self cMgr];
     [self setConnectWithPeripheralName:PeripheralName];
-    // 带有文字的转圈等待指示器
-    [SVProgressHUD showWithStatus:@"   正在连接设备请稍后..." maskType:SVProgressHUDMaskTypeBlack];
-    NSLog(@"正在连接设备请稍后...");
-    dispatch_async(
-                   dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                       // 执行耗时的异步操作...
-                       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                           
-                           // 隐藏指示器
-                           [SVProgressHUD dismiss];
-                           
-                           dispatch_async(dispatch_get_main_queue(), ^{
-                               // 回到主线程，执行UI刷新操作
-                               NSLog(@"设备连接成功!");
-                               
-                           });
-                       });
-                       
-                   });
+    [self cMgr];
+    [self setHUD];
     
 }
 
+
+/** 搜索加密设备*/
+- (void)searchPeripheralWithName:(NSString *)PeripheralName UUIDService: (NSString *)UUIDService UUIDCharacteristic:(NSString *)UUIDCharacteristic andEncryptString:(NSString *)str
+{
+    
+    self.str = str;
+    self.UUIDService = UUIDService;
+    self.UUIDCharacteristic = UUIDCharacteristic;
+    
+    [self setConnectWithPeripheralName:PeripheralName];
+    [self cMgr];
+    [self setHUD];
+    
+    
+}
+
+- (void)setHUD
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        if (self.isOpen == YES)
+        {
+            
+            // 带有文字的转圈等待指示器
+            [SVProgressHUD showWithStatus:@"   正在连接设备请稍后..." maskType:SVProgressHUDMaskTypeBlack];
+            NSLog(@"正在连接设备请稍后...");
+            dispatch_async(
+                           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                               // 执行耗时的异步操作...
+                               dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                   
+                                   // 隐藏指示器
+                                   [SVProgressHUD dismiss];
+                                   
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       // 回到主线程，执行UI刷新操作
+                                       NSLog(@"设备连接成功!");
+                                       
+                                   });
+                               });
+                               
+                           });
+        }
+        
+        
+    });
+    
+
+}
 
 - (NSInteger)readRSSIValue
 {
@@ -426,12 +483,16 @@ static CCJBLECenterManager *shareManager = nil;
 
 - (void)disconnectPeripheral
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [self ccj_dismissConentedWithPeripheral:self.peripheral IsCancle:YES];
-       
-    });
+    if (self.isOpen == YES && self.isConnect == YES)
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [self ccj_dismissConentedWithPeripheral:self.peripheral IsCancle:YES];
+            
+        });
+    }
     
 }
+
 
 @end

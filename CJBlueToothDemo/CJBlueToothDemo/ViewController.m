@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "CCJBLECenterManager.h"
+#import "CJBlueTooth.h"
 
 @interface ViewController ()
 
@@ -18,9 +18,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    CCJBLECenterManager *cenMgr = [CCJBLECenterManager defaultBleManager];
+//    CCJBLECenterManager *cenMgr = [CCJBLECenterManager defaultBleManager];
     
-    [cenMgr searchPeripheralWithName:@"ITAG"];
+    CJBlueTooth *cenMgr = [CJBlueTooth defaultBleManager];
+    
+  [cenMgr searchPeripheralWithName:@"ITAG"];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSInteger num = [cenMgr readRSSIValue];
@@ -32,7 +34,7 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     
-     CCJBLECenterManager *cenMgr = [CCJBLECenterManager defaultBleManager];
+     CJBlueTooth *cenMgr = [CJBlueTooth defaultBleManager];
     [cenMgr disconnectPeripheral];
 }
 - (void)didReceiveMemoryWarning {

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6677EE321C1FBA04001E71DC /* CCJBLECenterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6677EE251C1FBA04001E71DC /* CCJBLECenterManager.m */; };
 		6677EE331C1FBA04001E71DC /* FactoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6677EE271C1FBA04001E71DC /* FactoryManager.m */; };
 		6677EE341C1FBA04001E71DC /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6677EE2A1C1FBA04001E71DC /* LICENSE.txt */; };
 		6677EE351C1FBA04001E71DC /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 6677EE2B1C1FBA04001E71DC /* README.md */; };
@@ -22,6 +21,7 @@
 		668310FF1C1FA8C200D3BF05 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 668310FD1C1FA8C200D3BF05 /* LaunchScreen.storyboard */; };
 		6683110A1C1FA8C200D3BF05 /* CJBlueToothDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 668311091C1FA8C200D3BF05 /* CJBlueToothDemoTests.m */; };
 		668311151C1FA8C200D3BF05 /* CJBlueToothDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 668311141C1FA8C200D3BF05 /* CJBlueToothDemoUITests.m */; };
+		668490A71C2064C0002CBE49 /* CJBlueTooth.m in Sources */ = {isa = PBXBuildFile; fileRef = 668490A61C2064C0002CBE49 /* CJBlueTooth.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +42,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6677EE241C1FBA04001E71DC /* CCJBLECenterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCJBLECenterManager.h; sourceTree = "<group>"; };
-		6677EE251C1FBA04001E71DC /* CCJBLECenterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCJBLECenterManager.m; sourceTree = "<group>"; };
 		6677EE261C1FBA04001E71DC /* FactoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FactoryManager.h; sourceTree = "<group>"; };
 		6677EE271C1FBA04001E71DC /* FactoryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FactoryManager.m; sourceTree = "<group>"; };
 		6677EE2A1C1FBA04001E71DC /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -69,6 +67,8 @@
 		668311101C1FA8C200D3BF05 /* CJBlueToothDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CJBlueToothDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668311141C1FA8C200D3BF05 /* CJBlueToothDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJBlueToothDemoUITests.m; sourceTree = "<group>"; };
 		668311161C1FA8C200D3BF05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		668490A51C2064C0002CBE49 /* CJBlueTooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJBlueTooth.h; sourceTree = "<group>"; };
+		668490A61C2064C0002CBE49 /* CJBlueTooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJBlueTooth.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,8 +99,8 @@
 		6677EE231C1FBA04001E71DC /* CJBlueTooth */ = {
 			isa = PBXGroup;
 			children = (
-				6677EE241C1FBA04001E71DC /* CCJBLECenterManager.h */,
-				6677EE251C1FBA04001E71DC /* CCJBLECenterManager.m */,
+				668490A51C2064C0002CBE49 /* CJBlueTooth.h */,
+				668490A61C2064C0002CBE49 /* CJBlueTooth.m */,
 				6677EE261C1FBA04001E71DC /* FactoryManager.h */,
 				6677EE271C1FBA04001E71DC /* FactoryManager.m */,
 				6677EE281C1FBA04001E71DC /* Other */,
@@ -339,7 +339,7 @@
 				668310F71C1FA8C200D3BF05 /* ViewController.m in Sources */,
 				668310F41C1FA8C200D3BF05 /* AppDelegate.m in Sources */,
 				668310F11C1FA8C200D3BF05 /* main.m in Sources */,
-				6677EE321C1FBA04001E71DC /* CCJBLECenterManager.m in Sources */,
+				668490A71C2064C0002CBE49 /* CJBlueTooth.m in Sources */,
 				6677EE361C1FBA04001E71DC /* SVIndefiniteAnimatedView.m in Sources */,
 				6677EE331C1FBA04001E71DC /* FactoryManager.m in Sources */,
 			);
