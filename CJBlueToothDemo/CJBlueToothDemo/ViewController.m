@@ -17,12 +17,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-//    CCJBLECenterManager *cenMgr = [CCJBLECenterManager defaultBleManager];
     
     CJBlueTooth *cenMgr = [CJBlueTooth defaultBleManager];
     
-  [cenMgr searchPeripheralWithName:@"ITAG"];
+    [cenMgr searchPeripheralWithName:@"ITAG"];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSInteger num = [cenMgr readRSSIValue];
