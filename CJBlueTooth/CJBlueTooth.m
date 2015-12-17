@@ -428,7 +428,13 @@ static CJBlueTooth *shareManager = nil;
                                    
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        // 回到主线程，执行UI刷新操作
-                                       NSLog(@"设备连接成功!");
+                                       if (self.isConnect == YES) {
+                                           NSLog(@"设备连接成功!");
+                                           self.isConnect = YES;
+                                       }else
+                                       {
+                                           NSLog(@"设备连接不成功!");
+                                       }
                                        
                                    });
                                });

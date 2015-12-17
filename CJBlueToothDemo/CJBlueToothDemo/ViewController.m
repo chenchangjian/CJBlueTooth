@@ -33,7 +33,8 @@
 {
     
      CJBlueTooth *cenMgr = [CJBlueTooth defaultBleManager];
-    [cenMgr disconnectPeripheral];
+    
+    [cenMgr beginAlert];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
