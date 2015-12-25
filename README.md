@@ -15,7 +15,7 @@
 也可以通过加密通道来连接设备,加密通道连接设备试用于你的外设已经加密处理
 
     /**
-     *  UUIDService 加密服务字 
+     *  UUIDService 加密服务 
      *  UUIDCharacteristic 加密特征
      *  andEncryptString 要写入的加密字符串
      */
