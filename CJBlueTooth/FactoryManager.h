@@ -3,7 +3,7 @@
 //
 //  Created by ccj on 15/12/11.
 //  Copyright © 2015年 ccj. All rights reserved.
-//
+//  源码下载地址: https://github.com/chenchangjian/CJBlueTooth
 
 
 #import <Foundation/Foundation.h>
