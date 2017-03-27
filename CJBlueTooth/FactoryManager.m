@@ -42,7 +42,6 @@
     return time;
 }
 
-
 // 设置onView背景图片
 + (void)setBGImageWithImageName:(NSString *)imageName onView:(UIView *)onView
 {
